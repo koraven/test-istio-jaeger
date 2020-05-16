@@ -1,0 +1,33 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: main-gateway
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: count
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - main-gateway
+  http:
+  - match:
+    - uri:
+        exact: /
+    route:
+    - destination:
+        host: count-svc
+        port:
+          number: 5000

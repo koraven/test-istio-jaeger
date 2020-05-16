@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: count-deploymentv1
+  labels:
+    app: count
+    version: v1
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: count
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: count
+        version: v1
+    spec:
+      serviceAccountName: count-acc
+      containers:
+      - name: count
+        image: koraven/timer:4
+        imagePullPolicy: Always
+        env:
+          - name: REDIS_ADDR
+            value: redis-session-master.default.svc.cluster.local
+        ports:
+        - containerPort: 5000
