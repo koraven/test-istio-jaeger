@@ -1,0 +1,40 @@
+{% extends "bootstrap/base.html" %}
+{% block metas %}
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{% endblock %}
+
+{% block styles %}
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="static/bootstrap/css/bootstrap.min.css">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="static/bootstrap/css/bootstrap-theme.min.css">
+{% endblock %}
+{% block scripts %}
+<!-- Latest compiled and minified JavaScript -->
+<script src="static/jquery.min.js"></script>
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="static/bootstrap/js/bootstrap.min.js"></script>
+{% endblock %}
+{% block title %}Istio test{% endblock %}
+{% block content %}
+<p>
+    <h4>Counter: {{count.counter}} Hostname: {{count.hostname}}</h4>
+</p>
+<p>
+    <h4>Dollar: {{dollar}}</h4>
+</p>
+<form action="" method="post">
+    <p>
+    <label for="message">Your message</label>
+    <input type="text" name="message">
+</p>
+<p>
+    <input type="submit">
+</p>
+</form>
+{% endblock %}
+

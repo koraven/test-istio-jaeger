@@ -16,40 +16,6 @@ from flask import _request_ctx_stack as stack
 
 redis_addr = os.environ['REDIS_ADDR']
 
-""" def trace():
-    '''
-    Function decorator that creates opentracing span from incoming b3 headers
-    '''
-    def decorator(f):
-        def wrapper(*args, **kwargs):
-            request = stack.top.request
-            try:
-                # Create a new span context, reading in values (traceid,
-                # spanid, etc) from the incoming x-b3-*** headers.
-                span_ctx = tracer.extract(
-                    Format.HTTP_HEADERS,
-                    dict(request.headers)
-                )
-                # Note: this tag means that the span will *not* be
-                # a child span. It will use the incoming traceid and
-                # spanid. We do this to propagate the headers verbatim.
-                rpc_tag = {tags.SPAN_KIND: tags.SPAN_KIND_RPC_SERVER}
-                span = tracer.start_span(
-                    operation_name='op', child_of=span_ctx, tags=rpc_tag
-                )
-            except Exception as e:
-                # We failed to create a context, possibly due to no
-                # incoming x-b3-*** headers. Start a fresh span.
-                # Note: This is a fallback only, and will create fresh headers,
-                # not propagate headers.
-                span = tracer.start_span('op')
-            with span_in_context(span):
-                r = f(*args, **kwargs)
-                return r
-        wrapper.__name__ = f.__name__
-        return wrapper
-    return decorator """
-
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 requests_log = logging.getLogger("requests.packages.urllib3")
 requests_log.setLevel(logging.DEBUG)
@@ -92,8 +58,8 @@ def init_jaeger_tracer():
 #tracer = init_jaeger_tracer()
 
 
-cache = redis.StrictRedis(host=redis_addr, port=6379,password='5E5zTXj1bp')
-#cache = redis.StrictRedis(host=redis_addr, port=6379,password='sOmE_sEcUrE_pAsS')
+#cache = redis.StrictRedis(host=redis_addr, port=6379,password='5E5zTXj1bp')
+cache = redis.StrictRedis(host=redis_addr, port=6379,password='sOmE_sEcUrE_pAsS')
 def get_hit_count():
     retries = 5
     while True:
@@ -131,7 +97,6 @@ def index():
         if count > 5:
             cache.set('hits',0)
             exit(1)
-            return f"Error {count}", 502
         else:
-            return f"Hello World! I have been seen {count} times.\n HEADER: fsdfs hostname: {socket.gethostname()}\n"
+            return {'counter': count, 'hostname': socket.gethostname()}
     #tracer.close()
