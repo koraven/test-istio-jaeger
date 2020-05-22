@@ -58,13 +58,12 @@ def init_jaeger_tracer():
 #tracer = init_jaeger_tracer()
 
 
-#cache = redis.StrictRedis(host=redis_addr, port=6379,password='5E5zTXj1bp')
-cache = redis.StrictRedis(host=redis_addr, port=6379,password='sOmE_sEcUrE_pAsS')
+cache = redis.StrictRedis(host=redis_addr, port=6379,password='5E5zTXj1bp')
+#cache = redis.StrictRedis(host=redis_addr, port=6379,password='sOmE_sEcUrE_pAsS')
 def get_hit_count():
     retries = 5
     while True:
         try:
-
             return cache.incr('hits')
         except redis.exceptions.ConnectionError as exc:
             if retries == 0:
@@ -85,8 +84,6 @@ def index():
                     dict(request.headers)
                 )
     rpc_tag = {tags.SPAN_KIND: tags.SPAN_KIND_RPC_SERVER}
-
-    #header = request.headers.get('x-request-id')
 
     with tracer.start_span('index',child_of=span_ctx,tags=rpc_tag) as span:
         span.log_kv({'event': 'got request to /index'})

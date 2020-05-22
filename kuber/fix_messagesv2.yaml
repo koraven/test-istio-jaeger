@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fix-messages-deploymentv2
+  labels:
+    app: fix-messages
+    version: v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fix-messages
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: fix-messages
+        version: v2
+    spec:
+      serviceAccountName: fix-messages-acc
+      containers:
+      - name: fix-messages
+        image: koraven/fix_messages:3
+        imagePullPolicy: Always
+        env:
+          - name: MESSAGE
+            value: http://messages-svc:5003
+        ports:
+        - containerPort: 5002

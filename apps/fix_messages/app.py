@@ -1,8 +1,9 @@
-import psycopg2
-from jaeger_client import Config
-from flask import Flask, request, session, request, redirect, url_for
+import sys
+import logging
+from flask import Flask, render_template, request
+import requests, json
 from flask import _request_ctx_stack as stack
-import os,sys
+import os, sys
 
 from jaeger_client import Config
 import logging
@@ -35,7 +36,7 @@ def init_jaeger_tracer():
         },
         'logging': True
     },
-    service_name='messages.default',
+    service_name='fix-messages.default',
     validate=True,
     )
     tracer = config.initialize_tracer()
@@ -47,44 +48,35 @@ def init_jaeger_tracer():
     tracer.codecs = {Format.HTTP_HEADERS: B3Codec()}
     return tracer
 
-conn = psycopg2.connect(dbname='postgres', user='postgres', 
-                        password='postgres', host=os.environ['DB_HOSTNAME'])
-conn.autocommit = True
 
-@app.route('/',methods=['post','get'])
+
+@app.route('/',methods=['post'])
 def work_message():
     tracer = init_jaeger_tracer()
-    request = stack.top.request
-    print(dict(request.headers))
+    request_top = stack.top.request
+    print(dict(request_top.headers))
+    headers = {}
+    print(f"TYPE top_headers: {type(request_top.headers)}")
     span_ctx = tracer.extract(
                     Format.HTTP_HEADERS,
-                    dict(request.headers)
+                    dict(request_top.headers)
                 )
     rpc_tag = {tags.SPAN_KIND: tags.SPAN_KIND_RPC_SERVER}
-
-    if request.method == 'POST':
-        with tracer.start_span('put message',child_of=span_ctx,tags=rpc_tag) as span:
-            message = request.get_json(force=True)['message']
-            cursor = conn.cursor()
-            span.log_kv({'event': f"put message: '{message}' into PG"})
-            try:
-                cursor.execute(f"INSERT INTO messages (message) VALUES ('{message}')")
-                cursor.close()
-            except: 
-                cursor.close()
-                raise "PG put error"
-            return 'done', 200
-    else: 
-        with tracer.start_span('get messages',child_of=span_ctx,tags=rpc_tag) as span:
-            cursor = conn.cursor()
-            try:
-                cursor.execute('select message from messages')
-                records = cursor.fetchall()
-                cursor.close()
-            except:
-                cursor.close()
-                raise 'PG get error'
-            return {'messages': records}, 200
+    
+    with tracer.start_span('fix_messages',child_of=span_ctx,tags=rpc_tag) as span:
+        carrier = {}
+        tracer.inject(
+            span_context=span.context,
+            format=Format.HTTP_HEADERS,
+            carrier=carrier)
+        print(carrier)
+        print(type(carrier))
+        headers.update(carrier)
+        print(headers)
+        message = request.get_json(force=True)['message']
+        message = '\U0001F612' + message.upper()
+        res = requests.post(os.environ['MESSAGE'], json={'message': message},headers=headers)
+        return res.text, 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=5003, debug=True, threaded=True)
+    app.run(host='0.0.0.0',port=5002, debug=True, threaded=True)

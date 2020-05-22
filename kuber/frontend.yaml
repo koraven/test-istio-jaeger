@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deploymentv1
+  labels:
+    app: frontend
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: frontend
+        version: v1
+    spec:
+      serviceAccountName: frontend-acc
+      containers:
+      - name: frontend
+        image: koraven/frontend:3
+        imagePullPolicy: Always
+        env:
+          - name: COUNT
+            value: http://count-svc:5001
+          - name: FIX_MESSAGE
+            value: http://fix-messages-svc:5002
+          - name: MESSAGE
+            value: http://messages-svc:5003
+        ports:
+        - containerPort: 5001
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-svc
+  labels:
+    app: frontend
+    service: frontend-svc
+spec:
+  selector:
+    app: frontend
+  ports:
+  - port: 5000
+    name: http
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: frontend-acc
+  labels:
+    account: frontend

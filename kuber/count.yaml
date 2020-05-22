@@ -26,4 +26,26 @@ spec:
           - name: REDIS_ADDR
             value: redis-session-master.default.svc.cluster.local
         ports:
-        - containerPort: 5000
+        - containerPort: 5001
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: count-svc
+  labels:
+    app: count
+    service: count-svc
+spec:
+  selector:
+    app: count
+  ports:
+  - port: 5001
+    name: http
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: count-acc
+  labels:
+    account: count

@@ -10,5 +10,4 @@ urllib3==1.25.9
 Werkzeug==1.0.1
 opentracing-instrumentation==3.2.1
 jaeger-client==4.3.0
-Flask-Bootstrap==3.3.7.1  
 requests==2.23.0

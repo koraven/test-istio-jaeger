@@ -7,17 +7,11 @@
 
 {% block styles %}
 <!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="static/bootstrap/css/bootstrap.min.css">
-
-<!-- Optional theme -->
-<link rel="stylesheet" href="static/bootstrap/css/bootstrap-theme.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 {% endblock %}
 {% block scripts %}
-<!-- Latest compiled and minified JavaScript -->
-<script src="static/jquery.min.js"></script>
-
-<!-- Latest compiled and minified JavaScript -->
-<script src="static/bootstrap/js/bootstrap.min.js"></script>
 {% endblock %}
 {% block title %}Istio test{% endblock %}
 {% block content %}
@@ -36,5 +30,18 @@
     <input type="submit">
 </p>
 </form>
+
+<body>
+    <div class="container">
+        <h2>Messages</h2>
+        <div class="list-group">
+          {% for message in messages %}
+          <a class="list-group-item">{{message}}</a>
+          {% endfor %}
+        </div>
+      </div>
+</body>
+
+
 {% endblock %}
 
