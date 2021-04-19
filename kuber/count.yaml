@@ -20,7 +20,7 @@ spec:
       serviceAccountName: count-acc
       containers:
       - name: count
-        image: koraven/timer:4
+        image: koraven/timer:5
         imagePullPolicy: Always
         env:
           - name: REDIS_ADDR

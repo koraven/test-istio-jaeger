@@ -93,7 +93,7 @@ def index():
             count = get_hit_count()
         if count > 5:
             cache.set('hits',0)
-            exit(1)
+            a = 1/0
         else:
             return {'counter': count, 'hostname': socket.gethostname()}
     #tracer.close()
